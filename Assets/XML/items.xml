@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<ItemCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Items>
+    <Item>
+      <name>Console</name>
+      <width>1</width>
+      <height>1</height>
+      <obstacle>true</obstacle>
+      <spriteId>1</spriteId>
+    </Item>
+    <Item>
+      <name>Chair</name>
+      <width>1</width>
+      <height>1</height>
+      <obstacle>false</obstacle>
+      <spriteId>2</spriteId>
+    </Item>
+  </Items>
+</ItemCollection>
