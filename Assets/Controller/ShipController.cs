@@ -24,10 +24,6 @@ public class ShipController : MonoBehaviour {
             Debug.LogError("There are two ship controllers present!"); 
         }
         Instance = this;
-
-        Ship.RegisterPlacedObjectCreated(OnPlacedObjectCreated);
-        tileGameObjectMap = new Dictionary<Tile, GameObject>();
-        placedObjectGameObjectMap = new Dictionary<PlacedObject, GameObject>();
     }
 	
 	// Update is called once per frame
@@ -35,8 +31,17 @@ public class ShipController : MonoBehaviour {
 	
 	}
 
+    void initDictionaries() {
+        tileGameObjectMap = new Dictionary<Tile, GameObject>();
+        placedObjectGameObjectMap = new Dictionary<PlacedObject, GameObject>();
+    }
+
     public void CreatePlayerShip() {
+        initDictionaries();
+
         Ship = new Ship(shipWidth, shipHeight);
+
+        Ship.RegisterPlacedObjectCreated((placedObject) => { OnPlacedObjectCreated(placedObject); });
 
         tileGameObjectMap = new Dictionary<Tile, GameObject>();
 
@@ -55,13 +60,14 @@ public class ShipController : MonoBehaviour {
 
                 tileGameObjectMap.Add(tile_data, tile_go);
 
-
                 tile_data.RegisterTileTypeChangedCallback((tile) => { OnTileTypeChanged(tile, tile_go); });
             }
         }
 
         //Ship.RandomizeTiles();
+        
         Ship.buildShip();
+        Ship.placeObject("Console", Ship.GetTileAt(28, 25));
     }
 
     void OnTileTypeChanged(Tile tile_data, GameObject tile_go)
@@ -84,27 +90,17 @@ public class ShipController : MonoBehaviour {
     {
 
         // FIXME: does not consider multi-tile objects or rotation!
-
         // Create a visual GameObject linked to this data
         GameObject obj_go = new GameObject();
 
+        obj_go.name = obj.objectType + "_" + obj.tile.X + "_" + obj.tile.Y;
+        obj_go.transform.position = new Vector3(obj.tile.X, obj.tile.Y, 0);
+        obj_go.transform.SetParent(this.transform, true);
+
+        obj_go.AddComponent<SpriteRenderer>().sprite = sprite[obj.spriteId];
+        obj_go.GetComponent<SpriteRenderer>().sortingLayerName = "PlacedItems";
+
         placedObjectGameObjectMap.Add(obj, obj_go);
-
-        //obj_go.name = obj.objectType + "_" + obj.tile.X + "_" + obj.tile.Y;
-        //obj_go.transform.position = new Vector3(obj.tile.X, obj.tile.Y, 0);
-        //obj_go.transform.SetParent(this.transform, true);
-
-        //obj_go.AddComponent<SpriteRenderer>().sprite = wallSprite[0];
-
-        /*
-        if (obj.movementCost == 0)
-        {
-            Debug.Log("movementCost" + obj.movementCost);
-            obj_go.AddComponent<BoxCollider2D>();
-            obj_go.layer = 8;
-        }
-        */
-
 
         obj.RegisterOnChangedCallback(OnPlacedObjectChanged);
 
@@ -114,4 +110,7 @@ public class ShipController : MonoBehaviour {
     {
         Debug.LogError("OnInstalledObjectChanged not implemented");
     }
+
+    
+
 }

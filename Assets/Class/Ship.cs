@@ -10,12 +10,13 @@ public class Ship {
     public Tile[,] tiles;
 
     Dictionary<string, PlacedObject> placedObjectPrototypes;
-    Action<PlacedObject> cbPlacedObjectCreated;
     ItemContainer itemContainer;
 
     public int Width { get; protected set; }
     public int Height { get; protected set; }
     public ItemContainer ItemContainer { get; private set; }
+
+    Action<PlacedObject> cbPlacedObjectCreated;
 
     public Ship(int width = 10, int height = 10)
     {
@@ -36,6 +37,8 @@ public class Ship {
         Debug.Log("Ship created! Height: " + height + " Width: " + width);
 
         CreatePlacedObjectPrototypes();
+        Debug.Log("Prototypes created!");
+
     }
 
     public Tile GetTileAt(int x, int y)
@@ -130,21 +133,24 @@ public class Ship {
     {
         placedObjectPrototypes = new Dictionary<string, PlacedObject>();
         itemContainer = ItemContainer.Load(Path.Combine(Application.dataPath, "./xml/items.xml"));
-        itemContainer.Items.ForEach((item) => CreateItem(item.Name, item.Width, item.Height, item.Obstacle));
+        itemContainer.Items.ForEach((item) => {
+                CreateItem(item.Name, item.Width, item.Height, item.Obstacle, item.spriteId);
+            });
     }
 
-    public void CreateItem(string name, int width, int height, bool obstacle = false) {
+    public void CreateItem(string name, int width, int height, bool obstacle = false, int spriteId = 0) {
         PlacedObject objectProto = PlacedObject.CreatePrototype(
             name,
             width,
             height,
-            obstacle
+            obstacle,
+            spriteId
         );
 
         placedObjectPrototypes.Add(name, objectProto);
     }
 
-    public void PlaceObject(string objectType, Tile t)
+    public void placeObject(string objectType, Tile t)
     {
 
         if (placedObjectPrototypes.ContainsKey(objectType) == false)
@@ -167,6 +173,8 @@ public class Ship {
         }
     }
 
+    
+
     public void RegisterPlacedObjectCreated(Action<PlacedObject> callback)
     {
         cbPlacedObjectCreated += callback;
@@ -176,5 +184,7 @@ public class Ship {
     {
         cbPlacedObjectCreated -= callback;
     }
+
+
 
 }

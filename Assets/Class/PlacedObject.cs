@@ -8,6 +8,9 @@ public class PlacedObject
     // BASE tile of the object
     public Tile tile { get; protected set; }
     public string objectType { get; protected set; }
+    public int spriteId;
+
+    public enum Status { Placed, Built, Destroyed };
 
     // Movement speed multiplier (multiplier of 2 means twice as slow as normal)
     // 1f = normal speed
@@ -19,6 +22,7 @@ public class PlacedObject
     int width;
     int height;
     bool obstacle;
+    
 
     Action<PlacedObject> cbOnChanged;
 
@@ -28,13 +32,14 @@ public class PlacedObject
     protected PlacedObject() { }
 
     // object prototype
-    static public PlacedObject CreatePrototype(string objectType, int width = 1, int height = 1, bool obstacle = false)
+    static public PlacedObject CreatePrototype(string objectType, int width = 1, int height = 1, bool obstacle = false, int spriteId = 0)
     {
         PlacedObject obj = new PlacedObject();
         obj.objectType = objectType;
         obj.width = width;
         obj.height = height;
         obj.obstacle = obstacle;
+        obj.spriteId = spriteId;
 
         return obj;
     }
@@ -46,6 +51,8 @@ public class PlacedObject
         obj.objectType = proto.objectType;
         obj.width = proto.width;
         obj.height = proto.height;
+        obj.obstacle = proto.obstacle;
+        obj.spriteId = proto.spriteId;
 
         obj.tile = tile;
 
@@ -58,6 +65,7 @@ public class PlacedObject
         return obj;
     }
 
+    
 
     public void RegisterOnChangedCallback(Action<PlacedObject> callback)
     {

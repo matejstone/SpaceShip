@@ -6,9 +6,10 @@ public class UIController : MonoBehaviour {
 
     public Text mainText;
     public Text XYCoord;
+    public Text objectText;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 	
 	}
 	
@@ -42,6 +43,13 @@ public class UIController : MonoBehaviour {
         }
         if (oldText != newText) {
             XYCoord.text = newText;
+        }
+    }
+
+    public void updateObjectText(string objectName) {
+        string oldName = objectText.text;
+        if (objectName != oldName) {
+            objectText.text = objectName;
         }
     }
 }
