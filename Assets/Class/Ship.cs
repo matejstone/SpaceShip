@@ -134,23 +134,24 @@ public class Ship {
         placedObjectPrototypes = new Dictionary<string, PlacedObject>();
         itemContainer = ItemContainer.Load(Path.Combine(Application.dataPath, "./xml/items.xml"));
         itemContainer.Items.ForEach((item) => {
-                CreateItem(item.Name, item.Width, item.Height, item.Obstacle, item.spriteId);
+                CreateItem(item.Name, item.Width, item.Height, item.Obstacle, item.SpriteId, item.SpriteName);
             });
     }
 
-    public void CreateItem(string name, int width, int height, bool obstacle = false, int spriteId = 0) {
+    public void CreateItem(string name, int width, int height, bool obstacle = false, int spriteId = 0, string spriteName = "new_item") {
         PlacedObject objectProto = PlacedObject.CreatePrototype(
             name,
             width,
             height,
             obstacle,
-            spriteId
+            spriteId,
+            spriteName
         );
 
         placedObjectPrototypes.Add(name, objectProto);
     }
 
-    public void placeObject(string objectType, Tile t)
+    public void placeObject(string objectType, Tile t, PlacedObject.Rotation rotation = PlacedObject.Rotation.W)
     {
 
         if (placedObjectPrototypes.ContainsKey(objectType) == false)
@@ -159,7 +160,7 @@ public class Ship {
             return;
         }
 
-        PlacedObject obj = PlacedObject.PlaceObject(placedObjectPrototypes[objectType], t);
+        PlacedObject obj = PlacedObject.PlaceObject(placedObjectPrototypes[objectType], t, rotation);
 
         if (obj == null)
         {

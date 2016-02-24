@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class ShipController : MonoBehaviour {
 
@@ -17,6 +18,11 @@ public class ShipController : MonoBehaviour {
 
     public Sprite[] sprite;
 
+    public Sprite[] placedObjectSprites;
+    public string[] placedObjectSpriteNames;
+
+    public Sprite[] tileSprites;
+
     // Use this for initialization
     void Start () {
         if (Instance != null)
@@ -24,12 +30,42 @@ public class ShipController : MonoBehaviour {
             Debug.LogError("There are two ship controllers present!"); 
         }
         Instance = this;
+
+        LoadSprites();
+        initDictionaries();
+        CreatePlayerShip();
     }
 	
 	// Update is called once per frame
-	void Update () {
+	//void Update () {
 	
-	}
+	//}
+
+    private void LoadSprites() {
+        placedObjectSprites = Resources.LoadAll<Sprite>("PlacedObjects");
+        placedObjectSpriteNames = new string[placedObjectSprites.Length];
+        
+        for (int i = 0; i < placedObjectSpriteNames.Length; i++)
+        {
+            placedObjectSpriteNames[i] = placedObjectSprites[i].name;
+        }
+    }
+
+    public List<Sprite> GetPlacedObjectSpritesByName(string spriteName, int spriteId)
+    {
+        string fullSpriteName = spriteName + "_" + spriteId.ToString();
+
+        List<Sprite> foundSpriteList = new List<Sprite>();
+
+        // find all names that start with the full sprite name
+        for (int i = 0; i < placedObjectSpriteNames.Length; i++) {
+            if (placedObjectSpriteNames[i].StartsWith(fullSpriteName)) {
+                foundSpriteList.Add(placedObjectSprites[i]);
+            }
+        }
+
+        return foundSpriteList;
+    }
 
     void initDictionaries() {
         tileGameObjectMap = new Dictionary<Tile, GameObject>();
@@ -37,7 +73,7 @@ public class ShipController : MonoBehaviour {
     }
 
     public void CreatePlayerShip() {
-        initDictionaries();
+        //initDictionaries();
 
         Ship = new Ship(shipWidth, shipHeight);
 
@@ -68,6 +104,7 @@ public class ShipController : MonoBehaviour {
         
         Ship.buildShip();
         Ship.placeObject("Console", Ship.GetTileAt(28, 25));
+        Ship.placeObject("Chair", Ship.GetTileAt(27, 25), PlacedObject.Rotation.N);
     }
 
     void OnTileTypeChanged(Tile tile_data, GameObject tile_go)
@@ -97,13 +134,14 @@ public class ShipController : MonoBehaviour {
         obj_go.transform.position = new Vector3(obj.tile.X, obj.tile.Y, 0);
         obj_go.transform.SetParent(this.transform, true);
 
-        obj_go.AddComponent<SpriteRenderer>().sprite = sprite[obj.spriteId];
+        obj_go.AddComponent<SpriteRenderer>().sprite = getPlacedObjectSprite(obj);
+
         obj_go.GetComponent<SpriteRenderer>().sortingLayerName = "PlacedItems";
 
         placedObjectGameObjectMap.Add(obj, obj_go);
 
         obj.RegisterOnChangedCallback(OnPlacedObjectChanged);
-
+        obj.RegisterOnRotationChangedCallback((placedObj) => { OnPlacedObjectRotationChanged(placedObj); });
     }
 
     void OnPlacedObjectChanged(PlacedObject obj)
@@ -111,6 +149,24 @@ public class ShipController : MonoBehaviour {
         Debug.LogError("OnInstalledObjectChanged not implemented");
     }
 
-    
+    private Sprite getPlacedObjectSprite(PlacedObject obj) {
+        Sprite sprite = new Sprite();
+
+        for (int i = 0; i < obj.sprites.Length; i++)
+        {
+            if (obj.sprites[i].name == obj.spriteName + "_" + obj.spriteId + "_" + obj.rotation.ToString())
+            {
+                sprite = obj.sprites[i];
+            }
+        }
+
+        return sprite;
+    }
+
+    void OnPlacedObjectRotationChanged(PlacedObject obj)
+    {
+        GameObject obj_go = placedObjectGameObjectMap[obj];
+        obj_go.GetComponent<SpriteRenderer>().sprite = getPlacedObjectSprite(obj);
+    }
 
 }

@@ -6,14 +6,16 @@
       <width>1</width>
       <height>1</height>
       <obstacle>true</obstacle>
-      <spriteId>2</spriteId>
+      <spriteId>1</spriteId>
+      <spriteName>console</spriteName>
     </Item>
     <Item>
       <name>Chair</name>
       <width>1</width>
       <height>1</height>
       <obstacle>false</obstacle>
-      <spriteId>3</spriteId>
+      <spriteId>1</spriteId>
+      <spriteName>chair</spriteName>
     </Item>
   </Items>
 </ItemCollection>

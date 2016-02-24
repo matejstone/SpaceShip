@@ -8,10 +8,16 @@ public class CameraController : MonoBehaviour
     Vector3 dragStartPosition;
     Vector3 currFramePosition;
 
+    public static CameraController Instance { get; protected set; }
+
     // Use this for initialization
     void Start()
     {
-
+        if (Instance != null)
+        {
+            Debug.LogError("There are two Camera controllers present!");
+        }
+        Instance = this;
     }
 
     // Update is called once per frame

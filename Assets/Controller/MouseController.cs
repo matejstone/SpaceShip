@@ -10,9 +10,19 @@ public class MouseController : MonoBehaviour {
 
     List<GameObject> roomOverlayObjects;
 
+    public static MouseController Instance { get; protected set; }
+
+    public PlacedObject selectedObject;
+
     // Use this for initialization
     void Start () {
-	    roomOverlayObjects = new List<GameObject>();
+        if (Instance != null)
+        {
+            Debug.LogError("There are two Mouse controllers present!");
+        }
+        Instance = this;
+
+        roomOverlayObjects = new List<GameObject>();
         SimplePool.Preload(RoomOverlayPrefab, 20);
     }
 
@@ -28,11 +38,13 @@ public class MouseController : MonoBehaviour {
         {
             return;
         }
-        Vector3 currFramePosition = GameController.Instance.CameraController.getCurFramePosition();
+        Vector3 currFramePosition = CameraController.Instance.getCurFramePosition();
         // Set mouse position over the tile
         Tile tileUnderMouse = GameController.Instance.GetTileAtWorldCoord(currFramePosition);
+        PlacedObject objectUnderMouse = null;
 
         string roomName = "Space";
+        
 
         destroyRoomOverlay();
         hideCursor();
@@ -51,12 +63,52 @@ public class MouseController : MonoBehaviour {
 
             showCursor(tileUnderMouse.X, tileUnderMouse.Y);
 
-            GameController.Instance.UIController.updateMainText(roomName);
-            GameController.Instance.UIController.updateXYCoord(tileUnderMouse.X, tileUnderMouse.Y);
+            UIController.Instance.updateMainText(roomName);
+            UIController.Instance.updateXYCoord(tileUnderMouse.X, tileUnderMouse.Y);
+
+            string objectText = "";
+
+            if (tileUnderMouse.hasItem())
+            {
+                objectUnderMouse = tileUnderMouse.getPlacedItem();
+                objectText = objectUnderMouse.getType();
+            }
+
+            UIController.Instance.updateObjectText(objectText);
         }
         else {
-            GameController.Instance.UIController.updateMainText(roomName);
-            GameController.Instance.UIController.updateXYCoord(-1,-1);
+            UIController.Instance.updateMainText(roomName);
+            UIController.Instance.updateXYCoord(-1,-1);
+        }
+
+
+        if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+        {
+            if (Input.GetMouseButton(0) && tileUnderMouse != null && tileUnderMouse.hasItem())
+            {
+                selectPlacedObject(objectUnderMouse);
+            }
+            else if (Input.GetMouseButton(1)) {
+                deselectPlacedObject();
+            }
+                
+        }
+
+
+    }
+
+    public void deselectPlacedObject() {
+        Debug.Log("object deselect");
+        selectedObject = null;
+        UIController.Instance.toggleSelectPanel(false);
+    }
+
+    public void selectPlacedObject(PlacedObject pObject) {
+        
+        if (selectedObject != pObject) {
+            Debug.Log("selectPlacedObject");
+            selectedObject = pObject;
+            UIController.Instance.toggleSelectPanel(true, selectedObject);
         }
     }
 

@@ -16,17 +16,22 @@ public class Item
     public bool Obstacle;
 
     [XmlElement("spriteId")]
-    public int spriteId = 0;
+    public int SpriteId = 0;
 
-    public Item(string name = "New Item", int width = 1, int height = 1, bool obstacle = false) {
+    [XmlElement("spriteName")]
+    public string SpriteName;
+
+    public Item(string name = "New Item", int width = 1, int height = 1, bool obstacle = false, int spriteId = 0, string spriteName = "new_item") {
         this.Name = name;
         this.Width = width;
         this.Height = height;
         this.Obstacle = obstacle;
+        this.SpriteId = spriteId;
+        this.SpriteName = spriteName;
     }
 
     public void AddSprite(int spriteId) {
-        this.spriteId = spriteId;
+        this.SpriteId = spriteId;
     }
 
     public Item() { }

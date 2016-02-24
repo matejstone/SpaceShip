@@ -62,11 +62,16 @@ public class Tile {
 
         if (placedObject != null)
         {
-            //Debug.LogError("Trying to install an object to a tile that already has one");
+            Debug.LogError("Trying to install an object to a tile that already has one");
             return false;
         }
 
+        // first we need to assign the object to this tile as the main tile
         placedObject = objInstance;
+
+        // for objects that are bigger than 1x1 we need to also assign a placedobject to them
+        // we determine what tiles it also occupies based on the width, height and the direction it is facing
+
         // At this point everything's fine!
         return true;
     }
@@ -81,5 +86,11 @@ public class Tile {
         cbTileTypeChanged -= callback;
     }
 
+    public bool hasItem() {
+        return (placedObject != null ? true : false);
+    }
 
+    public PlacedObject getPlacedItem() {
+        return placedObject;
+    }
 }

@@ -22,7 +22,7 @@ public class GameController : MonoBehaviour {
         Instance = this;
 
 
-        ShipController.CreatePlayerShip();
+        //ShipController.CreatePlayerShip();
 
         CameraController.moveCameraTo(ShipController.shipWidth / 2, ShipController.shipHeight / 2);
 	}

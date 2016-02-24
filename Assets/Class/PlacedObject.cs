@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 public class PlacedObject
 {
@@ -8,16 +9,30 @@ public class PlacedObject
     // BASE tile of the object
     public Tile tile { get; protected set; }
     public string objectType { get; protected set; }
-    public int spriteId;
+    public int spriteId { get; protected set; }
+    public string spriteName { get; protected set; }
+    public Sprite[] sprites { get; protected set; }
 
     public enum Status { Placed, Built, Destroyed };
+    public enum Rotation { W, N, E, S };
+    private Rotation _rotation = Rotation.W;
+    Action<PlacedObject> cbOnRotationChanges;
 
-    // Movement speed multiplier (multiplier of 2 means twice as slow as normal)
-    // 1f = normal speed
-    // "rough" tile = 2
-    // table = 3
-    // rough + table = (2+3) = 5 so only 1/5th speed
-    public float movementCost { get; protected set; }
+    public Rotation rotation
+    {
+        get
+        {
+            return _rotation;
+        }
+        set
+        {
+            Rotation oldRotation = _rotation;
+            _rotation = value;
+
+            if (cbOnRotationChanges != null && oldRotation != _rotation)
+                cbOnRotationChanges(this);
+        }
+    }
 
     int width;
     int height;
@@ -32,7 +47,7 @@ public class PlacedObject
     protected PlacedObject() { }
 
     // object prototype
-    static public PlacedObject CreatePrototype(string objectType, int width = 1, int height = 1, bool obstacle = false, int spriteId = 0)
+    static public PlacedObject CreatePrototype(string objectType, int width = 1, int height = 1, bool obstacle = false, int spriteId = 0, string spriteName = "new_item")
     {
         PlacedObject obj = new PlacedObject();
         obj.objectType = objectType;
@@ -40,11 +55,12 @@ public class PlacedObject
         obj.height = height;
         obj.obstacle = obstacle;
         obj.spriteId = spriteId;
+        obj.spriteName = spriteName;
 
         return obj;
     }
 
-    static public PlacedObject PlaceObject(PlacedObject proto, Tile tile)
+    static public PlacedObject PlaceObject(PlacedObject proto, Tile tile, Rotation rotation = Rotation.W)
     {
         PlacedObject obj = new PlacedObject();
 
@@ -53,8 +69,19 @@ public class PlacedObject
         obj.height = proto.height;
         obj.obstacle = proto.obstacle;
         obj.spriteId = proto.spriteId;
+        obj.spriteName = proto.spriteName;
 
+        obj.rotation = rotation;
         obj.tile = tile;
+
+        if (obj.FindObjectSprites().Length == 0)
+        {
+            // Object doesnt have a sprite, we can't display it
+            Debug.LogError("Object has no sprite");
+            return null;
+        }
+
+
 
         if (tile.InstallObject(obj) == false)
         {
@@ -65,7 +92,21 @@ public class PlacedObject
         return obj;
     }
 
-    
+    private Sprite[] FindObjectSprites()
+    {
+        Debug.Log(spriteName);
+        Debug.Log(spriteId);
+        List<Sprite> spriteList = new List<Sprite>();
+        Debug.Log(ShipController.Instance);
+        spriteList = ShipController.Instance.GetPlacedObjectSpritesByName(spriteName, spriteId);
+        sprites = new Sprite[spriteList.Count];
+        sprites = spriteList.ToArray();
+        return sprites;
+    }
+
+    public string getType() {
+        return objectType;
+    }
 
     public void RegisterOnChangedCallback(Action<PlacedObject> callback)
     {
@@ -75,5 +116,15 @@ public class PlacedObject
     public void UnregisterOnChangedCallback(Action<PlacedObject> callback)
     {
         cbOnChanged -= callback;
+    }
+
+    public void RegisterOnRotationChangedCallback(Action<PlacedObject> callback)
+    {
+        cbOnRotationChanges += callback;
+    }
+
+    public void UnregisterOnRotationChangedCallback(Action<PlacedObject> callback)
+    {
+        cbOnRotationChanges += callback;
     }
 }
