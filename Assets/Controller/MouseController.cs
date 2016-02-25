@@ -97,16 +97,66 @@ public class MouseController : MonoBehaviour {
 
     }
 
+    public enum RotDirection { Left, Right };
+
+    public bool RotateSelectedObject(RotDirection direction) {
+        Debug.Log("RotateSelectedObject");
+        if (selectedObject != null)
+        {
+            Debug.Log("Not null!");
+            if (direction == RotDirection.Left)
+            {
+                Debug.Log("Left!");
+                if (selectedObject.rotation == PlacedObject.Rotation.E)
+                {
+                    selectedObject.rotation = PlacedObject.Rotation.N;
+                }
+                else if (selectedObject.rotation == PlacedObject.Rotation.W)
+                {
+                    selectedObject.rotation = PlacedObject.Rotation.S;
+                }
+                else if (selectedObject.rotation == PlacedObject.Rotation.N)
+                {
+                    selectedObject.rotation = PlacedObject.Rotation.W;
+                }
+                else if (selectedObject.rotation == PlacedObject.Rotation.S) {
+                    selectedObject.rotation = PlacedObject.Rotation.E;
+                }
+            }
+            else if (direction == RotDirection.Right)
+            {
+                Debug.Log("Right!");
+                if (selectedObject.rotation == PlacedObject.Rotation.E)
+                {
+                    selectedObject.rotation = PlacedObject.Rotation.S;
+                }
+                else if (selectedObject.rotation == PlacedObject.Rotation.W)
+                {
+                    selectedObject.rotation = PlacedObject.Rotation.N;
+                }
+                else if (selectedObject.rotation == PlacedObject.Rotation.N)
+                {
+                    selectedObject.rotation = PlacedObject.Rotation.E;
+                }
+                else if (selectedObject.rotation == PlacedObject.Rotation.S)
+                {
+                    selectedObject.rotation = PlacedObject.Rotation.W;
+                }
+            }
+        }
+        else {
+            Debug.LogError("No object selected");
+        }
+            return false;
+    }
+
     public void deselectPlacedObject() {
-        Debug.Log("object deselect");
         selectedObject = null;
         UIController.Instance.toggleSelectPanel(false);
     }
 
     public void selectPlacedObject(PlacedObject pObject) {
-        
         if (selectedObject != pObject) {
-            Debug.Log("selectPlacedObject");
             selectedObject = pObject;
             UIController.Instance.toggleSelectPanel(true, selectedObject);
         }

@@ -3,7 +3,7 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 
-public class PlacedObject
+public class ExternalObject
 {
 
     // BASE tile of the object
@@ -21,7 +21,7 @@ public class PlacedObject
 
     private Rotation _rotation = Rotation.W;
 
-    Action<PlacedObject> cbOnRotationChanges;
+    Action<ExternalObject> cbOnRotationChanges;
 
     public Rotation rotation
     {
@@ -39,14 +39,14 @@ public class PlacedObject
         }
     }
 
-    Action<PlacedObject> cbOnChanged;
+    Action<ExternalObject> cbOnChanged;
 
-    protected PlacedObject() { }
+    protected ExternalObject() { }
 
     // object prototype
-    static public PlacedObject CreatePrototype(string objectType, int width = 1, int height = 1, bool obstacle = false, int spriteId = 0, string spriteName = "new_item")
+    static public ExternalObject CreatePrototype(string objectType, int width = 1, int height = 1, bool obstacle = false, int spriteId = 0, string spriteName = "new_item")
     {
-        PlacedObject obj = new PlacedObject();
+        ExternalObject obj = new ExternalObject();
         obj.objectType = objectType;
         obj.width = width;
         obj.height = height;
@@ -57,9 +57,9 @@ public class PlacedObject
         return obj;
     }
 
-    static public PlacedObject PlaceObject(PlacedObject proto, Tile tile, Rotation rotation = Rotation.W)
+    static public ExternalObject PlaceObject(ExternalObject proto, Tile tile, Rotation rotation = Rotation.W)
     {
-        PlacedObject obj = new PlacedObject();
+        ExternalObject obj = new ExternalObject();
 
         obj.objectType = proto.objectType;
         obj.width = proto.width;
@@ -80,11 +80,11 @@ public class PlacedObject
 
 
 
-        if (tile.InstallObject(obj) == false)
-        {
-            // For some reason we werent able to place the object on this tile
-            return null;
-        }
+        //if (tile.InstallObject(obj) == false)
+        //{
+        //    // For some reason we werent able to place the object on this tile
+        //    return null;
+        //}
 
         return obj;
     }
@@ -101,26 +101,27 @@ public class PlacedObject
         return sprites;
     }
 
-    public string getType() {
+    public string getType()
+    {
         return objectType;
     }
 
-    public void RegisterOnChangedCallback(Action<PlacedObject> callback)
+    public void RegisterOnChangedCallback(Action<ExternalObject> callback)
     {
         cbOnChanged += callback;
     }
 
-    public void UnregisterOnChangedCallback(Action<PlacedObject> callback)
+    public void UnregisterOnChangedCallback(Action<ExternalObject> callback)
     {
         cbOnChanged -= callback;
     }
 
-    public void RegisterOnRotationChangedCallback(Action<PlacedObject> callback)
+    public void RegisterOnRotationChangedCallback(Action<ExternalObject> callback)
     {
         cbOnRotationChanges += callback;
     }
 
-    public void UnregisterOnRotationChangedCallback(Action<PlacedObject> callback)
+    public void UnregisterOnRotationChangedCallback(Action<ExternalObject> callback)
     {
         cbOnRotationChanges += callback;
     }

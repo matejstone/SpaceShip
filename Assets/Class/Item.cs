@@ -21,13 +21,17 @@ public class Item
     [XmlElement("spriteName")]
     public string SpriteName;
 
-    public Item(string name = "New Item", int width = 1, int height = 1, bool obstacle = false, int spriteId = 0, string spriteName = "new_item") {
+    [XmlElement("type")]
+    public string ItemType;
+
+    public Item(string name = "New Item", int width = 1, int height = 1, bool obstacle = false, int spriteId = 0, string spriteName = "new_item", string type = "internal") {
         this.Name = name;
         this.Width = width;
         this.Height = height;
         this.Obstacle = obstacle;
         this.SpriteId = spriteId;
         this.SpriteName = spriteName;
+        this.ItemType = type;
     }
 
     public void AddSprite(int spriteId) {

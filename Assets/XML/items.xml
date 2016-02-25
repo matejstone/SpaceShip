@@ -8,6 +8,7 @@
       <obstacle>true</obstacle>
       <spriteId>1</spriteId>
       <spriteName>console</spriteName>
+      <type>internal</type>
     </Item>
     <Item>
       <name>Chair</name>
@@ -16,6 +17,25 @@
       <obstacle>false</obstacle>
       <spriteId>1</spriteId>
       <spriteName>chair</spriteName>
+      <type>internal</type>
+    </Item>
+    <Item>
+      <name>Table</name>
+      <width>2</width>
+      <height>1</height>
+      <obstacle>false</obstacle>
+      <spriteId>1</spriteId>
+      <spriteName>table</spriteName>
+      <type>internal</type>
+    </Item>
+    <Item>
+      <name>Warp Reactor</name>
+      <width>3</width>
+      <height>3</height>
+      <obstacle>true</obstacle>
+      <spriteId>1</spriteId>
+      <spriteName>engine</spriteName>
+      <type>internal</type>
     </Item>
   </Items>
 </ItemCollection>

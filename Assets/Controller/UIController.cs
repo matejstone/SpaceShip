@@ -73,4 +73,12 @@ public class UIController : MonoBehaviour {
             objectText.text = objectName;
         }
     }
+
+    public void RotateLeftButton() {
+        MouseController.Instance.RotateSelectedObject(MouseController.RotDirection.Left);
+    }
+
+    public void RotateRightButton() {
+        MouseController.Instance.RotateSelectedObject(MouseController.RotDirection.Right);
+    }
 }

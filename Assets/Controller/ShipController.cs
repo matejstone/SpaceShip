@@ -9,6 +9,7 @@ public class ShipController : MonoBehaviour {
 
     public Dictionary<Tile, GameObject> tileGameObjectMap;
     Dictionary<PlacedObject, GameObject> placedObjectGameObjectMap;
+    Dictionary<ExternalObject, GameObject> externalObjectGameObjectMap;
 
     public Ship Ship { get; protected set; }
     public int shipWidth = 20;
@@ -18,8 +19,8 @@ public class ShipController : MonoBehaviour {
 
     public Sprite[] sprite;
 
-    public Sprite[] placedObjectSprites;
-    public string[] placedObjectSpriteNames;
+    public Sprite[] objectSprites;
+    public string[] objectSpriteNames;
 
     public Sprite[] tileSprites;
 
@@ -42,12 +43,12 @@ public class ShipController : MonoBehaviour {
 	//}
 
     private void LoadSprites() {
-        placedObjectSprites = Resources.LoadAll<Sprite>("PlacedObjects");
-        placedObjectSpriteNames = new string[placedObjectSprites.Length];
+        objectSprites = Resources.LoadAll<Sprite>("PlacedObjects");
+        objectSpriteNames = new string[objectSprites.Length];
         
-        for (int i = 0; i < placedObjectSpriteNames.Length; i++)
+        for (int i = 0; i < objectSpriteNames.Length; i++)
         {
-            placedObjectSpriteNames[i] = placedObjectSprites[i].name;
+            objectSpriteNames[i] = objectSprites[i].name;
         }
     }
 
@@ -58,9 +59,9 @@ public class ShipController : MonoBehaviour {
         List<Sprite> foundSpriteList = new List<Sprite>();
 
         // find all names that start with the full sprite name
-        for (int i = 0; i < placedObjectSpriteNames.Length; i++) {
-            if (placedObjectSpriteNames[i].StartsWith(fullSpriteName)) {
-                foundSpriteList.Add(placedObjectSprites[i]);
+        for (int i = 0; i < objectSpriteNames.Length; i++) {
+            if (objectSpriteNames[i].StartsWith(fullSpriteName)) {
+                foundSpriteList.Add(objectSprites[i]);
             }
         }
 
@@ -70,6 +71,7 @@ public class ShipController : MonoBehaviour {
     void initDictionaries() {
         tileGameObjectMap = new Dictionary<Tile, GameObject>();
         placedObjectGameObjectMap = new Dictionary<PlacedObject, GameObject>();
+        externalObjectGameObjectMap = new Dictionary<ExternalObject, GameObject>();
     }
 
     public void CreatePlayerShip() {
@@ -78,6 +80,7 @@ public class ShipController : MonoBehaviour {
         Ship = new Ship(shipWidth, shipHeight);
 
         Ship.RegisterPlacedObjectCreated((placedObject) => { OnPlacedObjectCreated(placedObject); });
+        //Ship.RegisterPlacedObjectCreated((placedObject) => { OnPlacedObjectCreated(placedObject); });
 
         tileGameObjectMap = new Dictionary<Tile, GameObject>();
 
@@ -105,6 +108,9 @@ public class ShipController : MonoBehaviour {
         Ship.buildShip();
         Ship.placeObject("Console", Ship.GetTileAt(28, 25));
         Ship.placeObject("Chair", Ship.GetTileAt(27, 25), PlacedObject.Rotation.N);
+
+        Ship.placeObject("Table", Ship.GetTileAt(20, 25));
+        Ship.placeObject("Warp Reactor", Ship.GetTileAt(11, 24));
     }
 
     void OnTileTypeChanged(Tile tile_data, GameObject tile_go)
@@ -125,8 +131,6 @@ public class ShipController : MonoBehaviour {
 
     public void OnPlacedObjectCreated(PlacedObject obj)
     {
-
-        // FIXME: does not consider multi-tile objects or rotation!
         // Create a visual GameObject linked to this data
         GameObject obj_go = new GameObject();
 
@@ -152,9 +156,14 @@ public class ShipController : MonoBehaviour {
     private Sprite getPlacedObjectSprite(PlacedObject obj) {
         Sprite sprite = new Sprite();
 
+        string spriteName = obj.spriteName + "_" + obj.spriteId + "_";
+
         for (int i = 0; i < obj.sprites.Length; i++)
         {
-            if (obj.sprites[i].name == obj.spriteName + "_" + obj.spriteId + "_" + obj.rotation.ToString())
+            if (obj.sprites[i].name == spriteName + obj.rotation.ToString()
+                || (obj.sprites[i].name == spriteName + "V" && (obj.rotation == PlacedObject.Rotation.N || obj.rotation == PlacedObject.Rotation.S))
+                || (obj.sprites[i].name == spriteName + "H" && (obj.rotation == PlacedObject.Rotation.E || obj.rotation == PlacedObject.Rotation.W))
+                )
             {
                 sprite = obj.sprites[i];
             }

@@ -10,6 +10,7 @@ public class Ship {
     public Tile[,] tiles;
 
     Dictionary<string, PlacedObject> placedObjectPrototypes;
+    Dictionary<string, ExternalObject> externalObjectPrototypes;
     ItemContainer itemContainer;
 
     public int Width { get; protected set; }
@@ -36,7 +37,7 @@ public class Ship {
 
         Debug.Log("Ship created! Height: " + height + " Width: " + width);
 
-        CreatePlacedObjectPrototypes();
+        CreateObjectPrototypes();
         Debug.Log("Prototypes created!");
 
     }
@@ -109,7 +110,7 @@ public class Ship {
         cargoBay.createRoom();
 
         // lets also do the engine room
-        int engiWidth = 5;
+        int engiWidth = 6;
         int engiHeight = 6;
 
         int engiX = cargoBayX - engiWidth;
@@ -129,26 +130,47 @@ public class Ship {
         tiles[x, y].Type = Tile.TileType.Floor;
     }
 
-    public void CreatePlacedObjectPrototypes()
+    public void CreateObjectPrototypes()
     {
         placedObjectPrototypes = new Dictionary<string, PlacedObject>();
+        externalObjectPrototypes = new Dictionary<string, ExternalObject>();
+
         itemContainer = ItemContainer.Load(Path.Combine(Application.dataPath, "./xml/items.xml"));
         itemContainer.Items.ForEach((item) => {
-                CreateItem(item.Name, item.Width, item.Height, item.Obstacle, item.SpriteId, item.SpriteName);
+                CreateItem(item.Name, item.Width, item.Height, item.Obstacle, item.SpriteId, item.SpriteName, item.ItemType);
             });
     }
 
-    public void CreateItem(string name, int width, int height, bool obstacle = false, int spriteId = 0, string spriteName = "new_item") {
-        PlacedObject objectProto = PlacedObject.CreatePrototype(
-            name,
-            width,
-            height,
-            obstacle,
-            spriteId,
-            spriteName
-        );
+    public void CreateItem(string name, int width, int height, bool obstacle, int spriteId, string spriteName, string itemType) {
+        if (itemType == "internal")
+        {
+            PlacedObject objectProto = PlacedObject.CreatePrototype(
+                name,
+                width,
+                height,
+                obstacle,
+                spriteId,
+                spriteName
+            );
 
-        placedObjectPrototypes.Add(name, objectProto);
+            placedObjectPrototypes.Add(name, objectProto);
+        }
+        else if (itemType == "external")
+        {
+            ExternalObject objectProto = ExternalObject.CreatePrototype(
+                name,
+                width,
+                height,
+                obstacle,
+                spriteId,
+                spriteName
+            );
+
+            externalObjectPrototypes.Add(name, objectProto);
+        }
+        else {
+            Debug.LogError("Item Type not defined");
+        }
     }
 
     public void placeObject(string objectType, Tile t, PlacedObject.Rotation rotation = PlacedObject.Rotation.W)

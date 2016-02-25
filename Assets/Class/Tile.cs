@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 public class Tile {
     Ship ship;
@@ -51,7 +52,8 @@ public class Tile {
         }
     }
 
-    public bool InstallObject(PlacedObject objInstance)
+    // multiTilePlacement = true means it will not check the other tiles for placement of the object
+    public bool InstallObject(PlacedObject objInstance, bool multiTilePlacement = false)
     {
         if (objInstance == null)
         {
@@ -66,7 +68,39 @@ public class Tile {
             return false;
         }
 
-        // first we need to assign the object to this tile as the main tile
+        if ((objInstance.width > 1 || objInstance.height > 1) && multiTilePlacement == false) {
+            // Find all the tiles it needs to also affect
+            
+            int width = 0;
+            int height = 0;
+
+            if (objInstance.rotation == PlacedObject.Rotation.E || objInstance.rotation == PlacedObject.Rotation.W)
+            {
+                width = objInstance.height;
+                height = objInstance.width;
+            }
+            else {
+                width = objInstance.width;
+                height = objInstance.height;
+            }
+
+            List<Tile> affectedTiles = new List<Tile>();
+
+            // we need to start at this tile and go right first
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    Tile tile = ship.GetTileAt(X + i, Y + j);
+                    if (tile != this) {
+                        affectedTiles.Add(tile);
+                        tile.InstallObject(objInstance, true);
+                    }
+                }
+            }
+        }
+
+        // we need to assign the object to this tile as the main tile
         placedObject = objInstance;
 
         // for objects that are bigger than 1x1 we need to also assign a placedobject to them
