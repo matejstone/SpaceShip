@@ -29,7 +29,9 @@ public class MouseController : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        UpdateCursor();
+        if (GameController.Instance.isInitDone) {
+            UpdateCursor();
+        }
     }
 
     void UpdateCursor()
@@ -165,7 +167,7 @@ public class MouseController : MonoBehaviour {
     void showRoomOverlay(Room room) {
         room.roomTiles.ForEach(tile => {
             GameObject go = (GameObject)SimplePool.Spawn(RoomOverlayPrefab, new Vector3(tile.X, tile.Y, 0), Quaternion.identity);
-            go.transform.parent = this.transform;
+            go.transform.parent = ShipController.Instance.transform;
             roomOverlayObjects.Add(go);
         });
     }

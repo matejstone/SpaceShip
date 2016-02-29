@@ -91,10 +91,7 @@ public class PlacedObject
 
     private Sprite[] FindObjectSprites()
     {
-        Debug.Log(spriteName);
-        Debug.Log(spriteId);
         List<Sprite> spriteList = new List<Sprite>();
-        Debug.Log(ShipController.Instance);
         spriteList = ShipController.Instance.GetPlacedObjectSpritesByName(spriteName, spriteId);
         sprites = new Sprite[spriteList.Count];
         sprites = spriteList.ToArray();

@@ -30,13 +30,15 @@ public class ShipController : MonoBehaviour {
         {
             Debug.LogError("There are two ship controllers present!"); 
         }
-        Instance = this;
+        Instance = this;  
+    }
 
+    public void initShip() {
         LoadSprites();
         initDictionaries();
         CreatePlayerShip();
     }
-	
+
 	// Update is called once per frame
 	//void Update () {
 	
@@ -95,7 +97,7 @@ public class ShipController : MonoBehaviour {
                 tile_go.transform.position = new Vector3(tile_data.X, tile_data.Y);
                 tile_go.transform.SetParent(this.transform, true);
                 tile_go.transform.localScale = new Vector3(1.0f, 1.0f);
-                tile_go.AddComponent<SpriteRenderer>();
+                tile_go.AddComponent<SpriteRenderer>().sortingLayerName = "Floor";
 
                 tileGameObjectMap.Add(tile_data, tile_go);
 

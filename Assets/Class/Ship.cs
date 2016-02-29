@@ -35,11 +35,7 @@ public class Ship {
             }
         }
 
-        Debug.Log("Ship created! Height: " + height + " Width: " + width);
-
         CreateObjectPrototypes();
-        Debug.Log("Prototypes created!");
-
     }
 
     public Tile GetTileAt(int x, int y)
